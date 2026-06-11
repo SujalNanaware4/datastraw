@@ -52,7 +52,10 @@ class Email(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# Check if columns exist and add them if missing
+# First create all tables (for fresh deployments)
+Base.metadata.create_all(bind=engine)
+
+# Check if columns exist and add them if missing (for existing databases)
 from sqlalchemy import text
 with engine.connect() as conn:
     # Check for category column
@@ -63,8 +66,6 @@ with engine.connect() as conn:
     if 'priority' not in columns:
         conn.execute(text("ALTER TABLE tickets ADD COLUMN priority TEXT DEFAULT 'Medium'"))
     conn.commit()
-
-Base.metadata.create_all(bind=engine)
 
 
 def get_db():
