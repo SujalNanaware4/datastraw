@@ -2,9 +2,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship
-from pydantic import BaseModel
+from sqlalchemy.orm import declarative_base, sessionmaker, Session, relationship
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
 import os
@@ -91,26 +90,23 @@ class TicketUpdate(BaseModel):
 
 
 class NoteResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     note_text: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class EmailResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     to_email: str
     subject: str
     body: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class TicketListResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     ticket_id: str
     customer_name: str
     customer_email: str
@@ -120,11 +116,9 @@ class TicketListResponse(BaseModel):
     priority: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class TicketDetailResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     ticket_id: str
     customer_name: str
     customer_email: str
@@ -137,9 +131,6 @@ class TicketDetailResponse(BaseModel):
     updated_at: datetime
     notes: List[NoteResponse] = []
     emails: List[EmailResponse] = []
-
-    class Config:
-        from_attributes = True
 
 
 @app.get("/api/stats")
@@ -289,7 +280,8 @@ def read_ticket(ticket_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    print("\nServer starting up!")
-    print("Access at: http://localhost:8002")
+    port = int(os.environ.get("PORT", 8002))
+    print(f"\nServer starting up!")
+    print(f"Access at: http://localhost:{port}")
     print("Press CTRL+C to stop\n")
-    uvicorn.run(app, host="localhost", port=8002)
+    uvicorn.run(app, host="0.0.0.0", port=port)
