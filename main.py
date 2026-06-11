@@ -288,4 +288,7 @@ def read_ticket(ticket_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8002)
+    print("\nServer starting up!")
+    print("Access at: http://localhost:8002")
+    print("Press CTRL+C to stop\n")
+    uvicorn.run(app, host="localhost", port=8002)
